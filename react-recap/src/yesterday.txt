@@ -1,0 +1,156 @@
+import { useEffect, useState } from "react";
+
+function App() {
+  //use of state variables using useState
+  const [posts, setPosts] = useState([]);
+
+  const [showTimer, setShowTimer] = useState(true);
+  //for conditionally rendering notification component
+  useEffect(() => {
+    setInterval(() => {
+      setShowTimer(currentValue => !currentValue);
+    }, 5000);
+  }, []);
+
+  const postComponents = posts.map(post => <PostComponent
+    name={post.name}
+    subtitle={post.subtitle}
+    time={post.time}
+    image={post.image}
+    description={post.description}
+  />)
+
+  function addPost() {
+    setPosts([...posts, {
+      name: "gururaj",
+      subtitle: "10000 followers",
+      time: "2m ago",
+      image: "https://appx-wsb-gcp.akamai.net.in/subject/2023-01-17-0.17044360120951185.jpg",
+      description: "What to know how to win big? Check otu how these folks won bounties"
+    }])
+  }
+
+  return (
+    <div style={{ background: "#dfe6e9", height: "100vh", }}>
+      <TabComponent></TabComponent>
+      {showTimer &&
+        <NotificationComponent></NotificationComponent>
+      }
+      <button onClick={addPost}>Add post</button>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <div>
+          {postComponents}
+        </div>
+      </div>
+    </div>
+
+  )
+}
+
+const style = { width: 200, backgroundColor: "white", borderRadius: 10, borderColor: "gray", borderWidth: 1, padding: 28 };
+
+
+//data is coming as a prop
+function PostComponent({ name, subtitle, time, image, description }) {
+  return <div>
+    <div style={style}>
+      <div style={{ display: "flex" }}>
+        <img src={image} style={{
+          width: 30,
+          height: 30,
+          borderRadius: 20
+        }} />
+        <div style={{ fontSize: 10, marginLeft: 10 }}>
+          <b>
+            {name}
+          </b>
+          <div>{subtitle}</div>
+          {/* Conditional rendering */}
+          {time && <div style={{ display: `flex` }}>
+            <div>{time}</div>
+            <img src={"https://cdn-icons-png.flaticon.com/512/2088/2088617.png"} style={{ width: 10, height: 10 }} />
+          </div>}
+        </div>
+      </div>
+      <div style={{ fontSize: 12 }}>
+        {description}
+      </div>
+    </div>
+    <br></br>
+  </div>
+}
+
+//Creating components
+function NotificationComponent() {
+  const [count, setCount] = useState(1);
+  //This code will run everytime the count changes
+  //in turn resulting in running several clocks
+
+  // setInterval(increaseCount, 1000);
+  // function increaseCount() {
+  //     setCount(count + 1);
+  //   }
+
+  function increaseCount() {
+    console.log("increase count is called")
+    setCount(currentValue => currentValue + 1)
+
+  }
+  useEffect(() => {
+    //This component will run on mount
+    //but will never unmount because you have not written cleanup code
+    console.log("set interval is called");
+    let clock = setInterval(increaseCount, 1000);
+
+    return () => {//cleanup function
+      //runs when component unmounts
+      clearInterval(clock);
+    }
+  }, []);
+
+  return <div style={{ display: "flex" }}>
+    <div>
+      <div style={{
+        background: "red", borderRadius: 20, width:
+          20, height: 25, paddingLeft: 10, paddingTop: 5
+      }}>
+        {count}
+      </div>
+      <img style={{ cursor: "pointer" }} src={"https://cdn-icons-png.flaticon.com/512/1827/1827314.png"} width={20}></img>
+    </div>
+  </div>
+}
+
+function TabComponent() {
+  const [currentTab, setCurrentTab] = useState(1);
+  const [tabData, setTabData] = useState({});
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+    fetch("http://jsonplaceholder.typicode.com/todos/" + currentTab)
+      .then(async res => {
+        const json = await res.json();
+        setTabData(json);
+        setLoading(false);
+      })
+  }, [currentTab]);
+//Use fragment to eliminate an extra div
+  return <>
+    <button onClick={function () {
+      setCurrentTab(1)
+    }} style={{ color: currentTab == 1 ? "red" : "black" }}>Todo #1</button>
+    <button onClick={function () {
+      setCurrentTab(2)
+    }} style={{ color: currentTab == 2 ? "red" : "black" }}>Todo #2</button>
+    <button onClick={function () {
+      setCurrentTab(3)
+    }} style={{ color: currentTab == 3 ? "red" : "black" }}>Todo #3</button>
+    <button onClick={function () {
+      setCurrentTab(4)
+    }} style={{ color: currentTab == 4 ? "red" : "black" }}>Todo #4</button>
+
+    <br />
+    {loading ? "loading......" : tabData.title}
+  </>
+}
+export default App

@@ -1,0 +1,90 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text"></input>
+    <button onclick="addTodo()">Add Todo!</button>
+</body>
+<script>
+    let idno = 1;
+    function addTodo() {
+        const inputEl = document.querySelector("input");
+        const value = inputEl.value;
+
+        const divBar = document.createElement("div");
+        divBar.setAttribute("id", idno);
+        divBar.innerHTML = `<div>${value}</div><button onclick="deleteTodo(${idno})">Delete</button>`;
+        idno = idno + 1;
+        const bodyguy = document.querySelector("body");
+        bodyguy.appendChild(divBar)
+    }
+    function deleteTodo(x) {
+        const element = document.getElementById(x);
+        element.parentNode.removeChild(element);
+    }
+</script>
+
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text"></input>
+    <button onclick="addTodo()">Add todo!</button>
+    <div id="todos"></div>
+    <script>
+        //state variable
+        let todos = [];
+
+        function addTodo(){
+            todos.push({
+                title: document.querySelector("input").value
+            })
+            render();
+            console.log(todos);
+        }
+
+        function deleteTodo(i){
+            const indexToRemove =i; 
+            // splice(start,numberof elements)
+            todos.splice(indexToRemove,1);
+            render();
+        }
+
+        //component
+        function createTodoComponent(todo,i){
+            const div = document.createElement("div");
+            const h1 = document.createElement("h1");
+            const button = document.createElement("button");
+            button.innerHTML = "Delete";
+            button.setAttribute("onclick",`deleteTodo(${i})`);
+            h1.innerHTML = todo.title;
+            div.append(h1);
+            div.append(button);
+            return div;
+        }
+
+        //this will be done by react
+        function render(){
+            document.getElementById("todos").innerHTML="";
+            for(let i=0;i<todos.length;i++){
+                const element= createTodoComponent(todos[i],i);
+                document.getElementById("todos").appendChild(element);
+            }
+        }
+    </script>
+</body>
+</html>
